@@ -95,7 +95,7 @@ async function main() {
 
     const inst = institutions.get(unitid);
     if (!inst || !inst.name) continue;
-    const bigEnough = (inst.ugds ?? 0) >= 3000 || NOTABLE_SMALL.has(inst.name);
+    const bigEnough = (inst.ugds ?? 0) >= 500 || NOTABLE_SMALL.has(inst.name);
     if (!bigEnough) continue;
 
     const major = cleanMajor(cols[6]);
@@ -137,7 +137,7 @@ async function main() {
       medianEarnings: median(values),
       schoolCount: values.length,
     }))
-    .filter((m) => m.schoolCount >= 8)
+    .filter((m) => m.schoolCount >= 5)
     .sort((a, b) => b.medianEarnings - a.medianEarnings);
 
   const schools = [...schoolsByUnitid.values()].sort((a, b) => a.name.localeCompare(b.name));

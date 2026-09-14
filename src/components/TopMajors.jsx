@@ -4,7 +4,9 @@ import { formatMoney } from "../lib/format";
 
 export default function TopMajors() {
   const { topMajors } = useSalaryData();
-  const top = topMajors.slice(0, 8);
+  // Require a decent sample size so this leaderboard isn't dominated by
+  // rare combined-degree titles that only a handful of schools report.
+  const top = topMajors.filter((m) => m.schoolCount >= 25).slice(0, 8);
 
   return (
     <section id="leaderboard" className="px-6 py-24">
@@ -14,8 +16,9 @@ export default function TopMajors() {
             Highest paying majors
           </h2>
           <p className="mt-3 text-ink/60 max-w-lg">
-            Median earnings across every college we track, four years after
-            graduation.
+            Median earnings four years after graduation, limited to majors
+            with at least 25 colleges reporting so the ranking isn't skewed
+            by rare programs.
           </p>
         </div>
 
