@@ -26,8 +26,21 @@ export default function Footer() {
           </p>
         </div>
         <div className="sm:text-right text-sm text-ink/45">
-          <p>Data source: U.S. Dept of Education, College Scorecard API</p>
+          <p>Data source: U.S. Dept of Education, College Scorecard</p>
           <p className="mt-1">Snapshot generated {date}</p>
+          <p className="mt-1">Not affiliated with any college listed or the Dept of Education</p>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto mt-10 pt-6 border-t border-line flex flex-wrap items-center justify-between gap-3 text-xs text-ink/45">
+        <p>© {new Date().getFullYear()} MajorPay. Informational only — not financial or career advice.</p>
+        <div className="flex gap-5">
+          <a href="/privacy.html" className="hover:text-ink transition-colors">
+            Privacy
+          </a>
+          <a href="/terms.html" className="hover:text-ink transition-colors">
+            Terms &amp; data disclaimer
+          </a>
         </div>
       </div>
     </footer>
