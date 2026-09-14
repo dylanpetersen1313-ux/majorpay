@@ -1,4 +1,4 @@
-import { useSalaryData } from "../lib/useSalaryData";
+import { useSalaryData } from "../lib/SalaryDataContext";
 
 export default function Footer() {
   const { generatedAt } = useSalaryData();

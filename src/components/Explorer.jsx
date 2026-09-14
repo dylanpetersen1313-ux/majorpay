@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, GraduationCap, Landmark } from "lucide-react";
-import { useSalaryData } from "../lib/useSalaryData";
+import { useSalaryData } from "../lib/SalaryDataContext";
 import { formatMoney } from "../lib/format";
 
 function RankedBar({ label, sub, value, max, index, accent = "moss" }) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSalaryData } from "../lib/useSalaryData";
+import { useSalaryData } from "../lib/SalaryDataContext";
 import { useCountUp } from "../lib/useCountUp";
 import { formatMoney } from "../lib/format";
 

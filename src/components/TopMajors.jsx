@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useSalaryData } from "../lib/useSalaryData";
+import { useSalaryData } from "../lib/SalaryDataContext";
 import { formatMoney } from "../lib/format";
 
 export default function TopMajors() {
