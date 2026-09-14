@@ -1,0 +1,35 @@
+import { useSalaryData } from "../lib/useSalaryData";
+
+export default function Footer() {
+  const { generatedAt } = useSalaryData();
+  const date = new Date(generatedAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <footer id="about" className="px-6 py-16 border-t border-line bg-paper-dim/50">
+      <div className="max-w-4xl mx-auto grid sm:grid-cols-2 gap-10">
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-moss" />
+            <span className="font-display text-lg">MajorPay</span>
+          </div>
+          <p className="text-sm text-ink/55 leading-relaxed max-w-sm">
+            Earnings figures are median salaries reported by the US
+            Department of Education's College Scorecard, based on federal tax
+            records of graduates working and not enrolled in further
+            schooling. Actual pay for any individual varies by role,
+            location, and experience — treat this as a directional guide, not
+            a guarantee.
+          </p>
+        </div>
+        <div className="sm:text-right text-sm text-ink/45">
+          <p>Data source: U.S. Dept of Education, College Scorecard API</p>
+          <p className="mt-1">Snapshot generated {date}</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
