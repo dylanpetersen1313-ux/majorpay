@@ -136,6 +136,12 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
         <Stat label="Annual cost" value={result.annualCost} />
         <Stat label="4-year cost" value={result.fourYearCost} />
       </div>
+      {school?.tuition && (
+        <p className="text-xs text-ink/40 mt-4">
+          Cost figures for {school.tuition.priceYear} — recent years are projected from IPEDS
+          historical growth rates, not directly reported.
+        </p>
+      )}
       {!school?.tuition && school && (
         <p className="text-xs text-ink/40 mt-4">No cost data available for this school.</p>
       )}
