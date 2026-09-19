@@ -5,17 +5,6 @@ import readline from "readline";
 
 const CONTROL_LABEL = { "1": "Public", "2": "Private nonprofit", "3": "Private for-profit" };
 
-// Small, well-known colleges that would otherwise be cut by the enrollment floor.
-const NOTABLE_SMALL = new Set([
-  "Williams College","Amherst College","Swarthmore College","Bowdoin College",
-  "Pomona College","Colby College","Middlebury College","Wellesley College",
-  "Claremont McKenna College","Carleton College","Bates College","Haverford College",
-  "Davidson College","Vassar College","Colgate University","Hamilton College",
-  "Smith College","Barnard College","Reed College","Grinnell College",
-  "Harvey Mudd College","Morehouse College","Spelman College","United States Military Academy",
-  "United States Naval Academy","United States Air Force Academy","Franklin W Olin College of Engineering",
-]);
-
 function parseCsvLine(line) {
   // Field-of-study/institution files don't quote-escape commas in the columns we use,
   // except institution names which can contain commas inside quotes.
@@ -95,8 +84,6 @@ async function main() {
 
     const inst = institutions.get(unitid);
     if (!inst || !inst.name) continue;
-    const bigEnough = (inst.ugds ?? 0) >= 500 || NOTABLE_SMALL.has(inst.name);
-    if (!bigEnough) continue;
 
     const major = cleanMajor(cols[6]);
     if (!major || /^Reserved/i.test(major)) continue;
