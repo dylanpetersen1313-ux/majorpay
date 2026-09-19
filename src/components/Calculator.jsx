@@ -225,24 +225,23 @@ export default function Calculator() {
           {tabs.map((tab) => (
             <div
               key={tab.id}
-              className={`group flex items-center gap-1.5 pl-4 pr-2 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
+              className={`group flex items-center gap-2 pl-4 pr-2.5 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
                 activeId === tab.id ? "bg-ink text-paper" : "bg-paper border border-line text-ink/60 hover:text-ink"
               }`}
               onClick={() => setActiveId(tab.id)}
             >
               <TabLabel tab={tab} schoolsById={schoolsById} />
-              {tabs.length > 1 && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeTab(tab.id);
-                  }}
-                  className={`rounded-full p-0.5 ${activeId === tab.id ? "hover:bg-paper/20" : "hover:bg-paper-dim"}`}
-                >
-                  <X size={13} />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTab(tab.id);
+                }}
+                aria-label="Clear this pick"
+                className={`rounded-full p-0.5 ${activeId === tab.id ? "hover:bg-paper/20" : "hover:bg-paper-dim"}`}
+              >
+                <X size={13} />
+              </button>
             </div>
           ))}
           {tabs.length < 5 && (
