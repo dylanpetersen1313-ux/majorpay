@@ -1,7 +1,7 @@
 import { SalaryDataProvider, useSalaryDataStatus } from "./lib/SalaryDataContext";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import Explorer from "./components/Explorer";
+import Calculator from "./components/Calculator";
 import TopMajors from "./components/TopMajors";
 import Footer from "./components/Footer";
 
@@ -36,7 +36,7 @@ function Page() {
       <Nav />
       <main>
         <Hero />
-        <Explorer />
+        <Calculator />
         <TopMajors />
       </main>
       <Footer />

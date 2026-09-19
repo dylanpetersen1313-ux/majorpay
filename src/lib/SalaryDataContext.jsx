@@ -37,6 +37,7 @@ export function SalaryDataProvider({ children }) {
     }
 
     const schoolsSorted = [...raw.schools].sort((a, b) => a.name.localeCompare(b.name));
+    const schoolsById = new Map(raw.schools.map((s) => [s.id, s]));
 
     return {
       generatedAt: raw.generatedAt,
@@ -47,6 +48,7 @@ export function SalaryDataProvider({ children }) {
       byMajor,
       majorNames: [...byMajor.keys()].sort(),
       schools: schoolsSorted,
+      schoolsById,
     };
   }, [raw]);
 
