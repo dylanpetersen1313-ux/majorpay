@@ -108,7 +108,7 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
               ))}
             </div>
             {isPrivate && (
-              <p className="text-xs text-ink/40 mt-1">Private school — same price for everyone.</p>
+              <p className="text-xs text-ink/40 mt-1">Private school, same price for everyone.</p>
             )}
           </div>
           <div>
@@ -138,7 +138,7 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
       </div>
       {school?.tuition && (
         <p className="text-xs text-ink/40 mt-4">
-          Cost figures for {school.tuition.priceYear} — recent years are projected from IPEDS
+          Cost figures for {school.tuition.priceYear}. Recent years are projected from IPEDS
           historical growth rates, not directly reported.
         </p>
       )}

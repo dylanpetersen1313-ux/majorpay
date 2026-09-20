@@ -21,7 +21,7 @@ export default function Footer() {
             Department of Education's College Scorecard, based on federal tax
             records of graduates working and not enrolled in further
             schooling. Actual pay for any individual varies by role,
-            location, and experience — treat this as a directional guide, not
+            location, and experience. Treat this as a directional guide, not
             a guarantee.
           </p>
         </div>
@@ -33,7 +33,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-4xl mx-auto mt-10 pt-6 border-t border-line flex flex-wrap items-center justify-between gap-3 text-xs text-ink/45">
-        <p>© {new Date().getFullYear()} MajorPay. Informational only — not financial or career advice.</p>
+        <p>© {new Date().getFullYear()} MajorPay. Informational only, not financial or career advice.</p>
         <div className="flex gap-5">
           <a href="/privacy.html" className="hover:text-ink transition-colors">
             Privacy
