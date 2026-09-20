@@ -1,8 +1,6 @@
 import { SalaryDataProvider, useSalaryDataStatus } from "./lib/SalaryDataContext";
 import Nav from "./components/Nav";
-import Hero from "./components/Hero";
 import Calculator from "./components/Calculator";
-import TopMajors from "./components/TopMajors";
 import Footer from "./components/Footer";
 
 function LoadingScreen() {
@@ -35,9 +33,7 @@ function Page() {
     <div className="min-h-screen bg-paper text-ink">
       <Nav />
       <main>
-        <Hero />
         <Calculator />
-        <TopMajors />
       </main>
       <Footer />
     </div>

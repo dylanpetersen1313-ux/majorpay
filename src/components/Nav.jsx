@@ -14,12 +14,6 @@ export default function Nav() {
           <span className="font-display text-xl tracking-tight">MajorPay</span>
         </a>
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-ink/70">
-          <a href="#explore" className="hover:text-ink transition-colors">
-            Explore
-          </a>
-          <a href="#leaderboard" className="hover:text-ink transition-colors">
-            Top majors
-          </a>
           <a href="#about" className="hover:text-ink transition-colors">
             About the data
           </a>

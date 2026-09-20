@@ -54,7 +54,7 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
 
   return (
     <div className="rounded-3xl border border-line bg-paper p-6 sm:p-8">
-      <div className="grid sm:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
             College
@@ -80,11 +80,11 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
         </div>
       </div>
 
-      <details className="mb-6 group">
-        <summary className="cursor-pointer text-sm font-medium text-ink/60 hover:text-ink select-none">
-          + Add cost details (optional)
-        </summary>
-        <div className="grid sm:grid-cols-2 gap-4 mt-4">
+      <div className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink/50 mb-3">
+          Cost details
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
               Residency
@@ -129,9 +129,9 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
             </select>
           </div>
         </div>
-      </details>
+      </div>
 
-      <div className="grid grid-cols-3 gap-6 border-t border-line pt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 border-t border-line pt-6">
         <Stat label="Estimated salary" value={result.salary} big />
         <Stat label="Annual cost" value={result.annualCost} />
         <Stat label="4-year cost" value={result.fourYearCost} />
