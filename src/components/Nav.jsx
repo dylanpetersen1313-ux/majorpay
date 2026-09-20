@@ -11,7 +11,7 @@ export default function Nav() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-moss" />
-          <span className="font-display text-xl tracking-tight">MajorPay</span>
+          <span className="font-display text-xl tracking-tight">Tuition Value</span>
         </a>
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-ink/70">
           <a href="#about" className="hover:text-ink transition-colors">
