@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { SalaryDataProvider, useSalaryDataStatus } from "./lib/SalaryDataContext";
 import Nav from "./components/Nav";
 import Calculator from "./components/Calculator";
@@ -44,6 +45,7 @@ function App() {
   return (
     <SalaryDataProvider>
       <Page />
+      <Analytics />
     </SalaryDataProvider>
   );
 }
