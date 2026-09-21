@@ -2,6 +2,7 @@ import { SalaryDataProvider, useSalaryDataStatus } from "./lib/SalaryDataContext
 import Nav from "./components/Nav";
 import Calculator from "./components/Calculator";
 import Footer from "./components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 function LoadingScreen() {
   return (
@@ -44,6 +45,7 @@ function App() {
   return (
     <SalaryDataProvider>
       <Page />
+      <Analytics />
     </SalaryDataProvider>
   );
 }
