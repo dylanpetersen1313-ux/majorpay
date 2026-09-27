@@ -222,7 +222,7 @@ export default function Calculator() {
 
   return (
     <section className="px-5 sm:px-6 pt-10 pb-20">
-      <div className="max-w-5xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_15rem] gap-x-12 gap-y-8">
+      <div className="max-w-3xl mx-auto">
         <div>
           <h1 className="font-display text-3xl sm:text-[2.35rem] leading-tight tracking-tight">What a degree costs, and what it pays</h1>
           <p className="mt-2 text-ink/60 max-w-xl">
@@ -275,18 +275,6 @@ export default function Calculator() {
           )}
         </div>
 
-        <aside className="text-sm text-ink/65 leading-relaxed lg:pt-16 space-y-3 lg:border-l lg:border-line lg:pl-6">
-          <p className="font-medium text-ink">About the numbers</p>
-          <p>
-            Salaries come from federal tax records, via the Dept. of Education's College Scorecard. They're medians for
-            graduates who got federal aid and were working, not in school, four years after finishing.
-          </p>
-          <p>Costs use net price when you give an income. That's what families actually paid after grants, which is often far below sticker.</p>
-          <p>Small programs sometimes have no salary. That's the government withholding it for privacy, not a gap we can fill.</p>
-          <p>
-            <a href="/methodology.html" className="text-moss underline underline-offset-2">Full methodology and sources</a>
-          </p>
-        </aside>
       </div>
     </section>
   );
