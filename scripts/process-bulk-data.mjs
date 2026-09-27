@@ -78,9 +78,10 @@ async function main() {
     const credlev = cols[7];
     if (credlev !== "3") continue; // bachelor's only
 
+    // One horizon for everything: 4 years after completion (EARN_MDN_4YR).
+    // No 1-year fallback, so every salary shown measures the same point in a career.
     const earn4 = num(cols[129]);
-    const earn1 = num(cols[123]);
-    if (earn4 == null && earn1 == null) continue;
+    if (earn4 == null) continue;
 
     const inst = institutions.get(unitid);
     if (!inst || !inst.name) continue;
@@ -102,10 +103,9 @@ async function main() {
     schoolsByUnitid.get(unitid).programs.push({
       major,
       earnings4yr: earn4,
-      earnings1yr: earn1,
     });
 
-    const val = earn4 ?? earn1;
+    const val = earn4;
     if (!majorAgg.has(major)) majorAgg.set(major, []);
     majorAgg.get(major).push(val);
     kept++;
@@ -132,7 +132,7 @@ async function main() {
   const output = {
     generatedAt: new Date().toISOString(),
     source:
-      "US Dept of Education College Scorecard — bulk Field of Study data, bachelor's degrees, median earnings 4 years after graduation (1 year fallback)",
+      "US Dept of Education College Scorecard — bulk Field of Study data, bachelor's degrees, median earnings 4 years after graduation (EARN_MDN_4YR only)",
     schoolCount: schools.length,
     majorCount: majors.length,
     majors,

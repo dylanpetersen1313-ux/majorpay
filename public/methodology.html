@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Methodology · Tuition Value</title>
+<meta name="description" content="How Tuition Value computes salary, cost and payoff: data sources, time horizons, suppressed data and limitations.">
+<style>
+:root{color-scheme:light}
+body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;background:#faf8f3;
+color:#0c0e0c;line-height:1.65;max-width:720px;margin:0 auto;padding:40px 20px 64px}
+h1{letter-spacing:-.5px;font-weight:700;margin-bottom:4px} h2{margin-top:36px;font-size:18px}
+p,li,td,th{color:#3d3d38;font-size:15px} a{color:#1f5c46}
+code{font-size:13px;background:#f1efe6;padding:1px 4px;border-radius:3px}
+table{border-collapse:collapse;width:100%;margin:12px 0} th,td{text-align:left;border-bottom:1px solid #e3e0d3;padding:6px 8px 6px 0;vertical-align:top}
+th{font-weight:600;color:#0c0e0c;font-size:14px}
+.back{display:inline-block;margin-bottom:24px;text-decoration:none;color:#1f5c46}
+.small{font-size:13px;color:#6b6b63}
+</style>
+</head>
+<body>
+<a class="back" href="/">&larr; Tuition Value</a>
+<h1>Methodology</h1>
+<p class="small">Last updated September 26, 2026.</p>
+
+<p>Every number on this site comes from two federal datasets, processed the same way for every
+school and major. This page says exactly which files, which years, and what we do when data is missing.</p>
+
+<h2>Data sources</h2>
+<table>
+<tr><th>What</th><th>Source</th><th>Used for</th></tr>
+<tr><td>Earnings by field of study</td><td><a href="https://collegescorecard.ed.gov/data/">College Scorecard</a>, U.S. Dept. of Education, June 10, 2026 release. File: <code>Most-Recent-Cohorts-Field-of-Study.csv</code></td><td>Median salary for each school and major (bachelor's degrees only)</td></tr>
+<tr><td>Institution details</td><td>Same release. File: <code>Most-Recent-Cohorts-Institution.csv</code></td><td>School name, city, state, public or private</td></tr>
+<tr><td>Prices</td><td>Tuition and net-price files derived from <a href="https://nces.ed.gov/ipeds/">IPEDS</a> (National Center for Education Statistics)</td><td>Sticker price in-state and out-of-state, average net price, net price by family income</td></tr>
+</table>
+<p>That's the complete list. We don't mix in other salary sources such as schools' own career-outcome
+reports, Bureau of Labor Statistics occupation data, or web searches. Those describe different people,
+measured at different times, in different ways, so they can't be compared with each other or with the
+federal figures.</p>
+
+<h2>Earnings</h2>
+<p>The salary shown is the Scorecard field <code>EARN_MDN_4YR</code>: median annual earnings in the
+<strong>fourth full year after completing the degree</strong>. For this release that means students who
+finished in the 2017-18 and 2018-19 award years, with earnings measured in calendar years 2022 and 2023,
+adjusted for inflation to 2024 dollars.</p>
+<p>Earnings come from IRS tax records (W-2 wages plus self-employment income), matched by the Department of
+Education. A graduate is only counted if they received federal financial aid, were working, and were not
+enrolled in school during the year earnings were measured.</p>
+<p>Every salary on the site uses this same 4-year measure. Earlier versions fell back to the 1-year figure
+when the 4-year one was missing, which put first-year and fourth-year pay in the same comparison. That
+fallback is gone.</p>
+
+<h2>Cost</h2>
+<p>Prices are for the 2026-27 academic year. The most recent years are projected forward from each school's
+own historical IPEDS growth rate, so treat them as estimates.</p>
+<ul>
+<li><strong>No income selected:</strong> the sticker price for the residency you pick (tuition, fees, room
+and board as the school reports it). With no residency picked, the school's average net price across all
+aided students.</li>
+<li><strong>Income selected:</strong> the school's average net price for families in that income bracket,
+meaning what they paid after grants and scholarships. These figures describe in-state students. At a
+public school, choosing out-of-state adds the out-of-state premium (out-of-state sticker minus in-state
+sticker), since need-based aid rarely covers it. Private schools charge everyone the same.</li>
+<li><strong>Four-year cost</strong> is the annual cost times four. No tuition increases are added during
+those four years.</li>
+</ul>
+
+<h2>The payoff column</h2>
+<p>"Salary minus yearly cost" is the year-4 salary minus one quarter of the four-year cost. It's a
+single-year snapshot meant for ranking options against each other. No discounting is applied, and it
+ignores loan interest, taxes, raises after year 4, and the earnings you give up while in school. It is
+not a lifetime return.</p>
+
+<h2>Missing and suppressed data</h2>
+<ul>
+<li>The Department of Education withholds earnings (marked <code>PS</code>, privacy suppressed) when a
+program has too few graduates in the data. We treat those as missing. We never estimate or fill them in.</li>
+<li>Programs with no published 4-year figure don't appear in the major list. In this release that left
+27,048 bachelor's programs at 1,917 schools.</li>
+<li>Schools with no price data still show salaries, with cost marked as unavailable.</li>
+</ul>
+
+<h2>Limitations</h2>
+<p><strong>Selection, not cause.</strong> Earnings differences between schools and majors partly reflect who
+chooses them: prior preparation, family resources, location, career goals. A school with high median pay
+didn't necessarily cause it. The numbers describe past graduates, not what attending will do for a
+particular person.</p>
+<p><strong>Grad school leaves the data.</strong> Anyone enrolled in school during the measurement year is
+excluded. Majors where many graduates go on to medical school, law school or PhDs (biology, chemistry,
+psychology, pre-law tracks) are represented mostly by those who didn't, which can make them look
+worse or better than they really are.</p>
+<p><strong>Federal aid recipients only.</strong> Students who never received federal aid aren't in the
+earnings data. At schools where most students pay full price without federal aid, the median reflects a
+smaller, different slice of graduates.</p>
+<p><strong>Four years is early.</strong> Pay in some fields grows slowly and then fast. A year-4 snapshot
+can understate careers like medicine, law or academia and overstate fields that plateau early.</p>
+
+<h2>Why this isn't just Googling it</h2>
+<p>Search "average salary for [major] at [school]" and you get numbers from self-reported salary sites,
+school marketing pages, and articles, each measured differently: different years after graduation,
+different definitions of "graduate," often no sample size at all. Two of those numbers can't be fairly
+compared.</p>
+<p>Here, every salary is the same federal tax-record measure, four years out, for every school and major.
+Every cost is the same IPEDS price data, and when you give an income it's the net price families in
+that bracket actually paid, not the sticker price. The math is identical for every result, so a
+comparison between two schools is a comparison of like with like.</p>
+
+<p class="small" style="margin-top:40px">Questions or a number that looks wrong? The <a href="/terms.html">terms page</a> covers how to reach us.
+Tuition Value is independent and not affiliated with the Department of Education or any school.</p>
+</body>
+</html>

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { useSalaryData } from "../lib/SalaryDataContext";
 import { formatMoney } from "../lib/format";
-import { INCOME_BRACKETS, INCOME_BRACKET_LABELS, getAnnualCost, getFourYearCost, getRoi } from "../lib/cost";
+import { INCOME_BRACKETS, INCOME_BRACKET_LABELS, getAnnualCost, getFourYearCost, getRoi, outOfStatePremium } from "../lib/cost";
 import SearchSelect from "./SearchSelect";
 
 let nextId = 1;
@@ -13,29 +13,36 @@ function makeTab() {
 function computeTabResult(tab, schoolsById) {
   const school = tab.schoolId != null ? schoolsById.get(tab.schoolId) : null;
   const program = school?.programs.find((p) => p.major === tab.major);
-  const salary = program ? program.earnings4yr ?? program.earnings1yr : null;
+  const salary = program?.earnings4yr ?? null;
   const annualCost = school ? getAnnualCost(school, tab) : null;
   const fourYearCost = school ? getFourYearCost(school, tab) : null;
   const roi = getRoi(salary, fourYearCost);
   return { school, salary, annualCost, fourYearCost, roi };
 }
 
+// Says in plain words which price the annual cost is, since it changes with the inputs.
+function costBasis(school, { residency, incomeBracket }) {
+  const t = school?.tuition;
+  if (!t) return null;
+  const isPublic = school.control === "Public";
+  if (incomeBracket && t.netPriceByIncome?.[incomeBracket] != null) {
+    const base = `Net price for families earning ${INCOME_BRACKET_LABELS[incomeBracket]}`;
+    if (residency === "out" && outOfStatePremium(t) > 0) return `${base}, plus the ${formatMoney(outOfStatePremium(t))} out-of-state premium`;
+    if (isPublic && !residency) return `${base} (in-state)`;
+    return base;
+  }
+  if (residency === "out" && t.outOfStateSticker != null) return "Out-of-state sticker price";
+  if (residency === "in" && t.inStateSticker != null) return "In-state sticker price";
+  return "Average net price, all incomes";
+}
+
 function TabLabel({ tab, schoolsById }) {
   const school = tab.schoolId != null ? schoolsById.get(tab.schoolId) : null;
   if (!school) return "New";
-  return school.name.length > 22 ? school.name.slice(0, 20) + "…" : school.name;
+  return school.name.length > 24 ? school.name.slice(0, 22) + "…" : school.name;
 }
 
-function Stat({ label, value, big }) {
-  return (
-    <div>
-      <div className={`font-display tabular text-ink ${big ? "text-4xl sm:text-5xl" : "text-2xl"}`}>
-        {value == null ? "—" : formatMoney(value)}
-      </div>
-      <div className="text-xs uppercase tracking-wide text-ink/50 mt-1.5">{label}</div>
-    </div>
-  );
-}
+const label = "block text-[13px] font-medium text-ink/70 mb-1";
 
 function CalculatorForm({ tab, onChange, schools, schoolsById }) {
   const school = tab.schoolId != null ? schoolsById.get(tab.schoolId) : null;
@@ -51,135 +58,132 @@ function CalculatorForm({ tab, onChange, schools, schoolsById }) {
   );
 
   const isPrivate = school?.control && school.control !== "Public";
+  const basis = costBasis(school, tab);
 
   return (
-    <div className="rounded-3xl border border-line bg-paper p-6 sm:p-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+    <div className="border border-line bg-paper rounded-md">
+      <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
-            College
-          </label>
+          <label className={label}>College</label>
           <SearchSelect
             options={schoolOptions}
             value={tab.schoolId}
             onSelect={(id) => onChange({ ...tab, schoolId: id, major: null })}
-            placeholder="Search a college…"
+            placeholder="Type a school name"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
-            Major
-          </label>
+          <label className={label}>Major</label>
           <SearchSelect
             options={majorOptions}
             value={tab.major}
             onSelect={(major) => onChange({ ...tab, major })}
-            placeholder={school ? "Search a major…" : "Pick a college first"}
+            placeholder={school ? `${school.programs.length} majors with salary data` : "Pick a college first"}
             disabled={!school}
           />
         </div>
-      </div>
-
-      <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink/50 mb-3">
-          Cost details
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
-              Residency
-            </label>
-            <div className="inline-flex w-full p-1 rounded-xl bg-paper-dim border border-line">
-              {[
-                { id: "in", label: "In-state" },
-                { id: "out", label: "Out-of-state" },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  disabled={isPrivate}
-                  onClick={() => onChange({ ...tab, residency: tab.residency === opt.id ? null : opt.id })}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 ${
-                    tab.residency === opt.id ? "bg-ink text-paper" : "text-ink/60 hover:text-ink"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-            {isPrivate && (
-              <p className="text-xs text-ink/40 mt-1">Private school, same price for everyone.</p>
-            )}
+        <div>
+          <label className={label}>Residency</label>
+          <div className="inline-flex w-full border border-line rounded-md overflow-hidden">
+            {[
+              { id: "in", label: "In-state" },
+              { id: "out", label: "Out-of-state" },
+            ].map((opt, i) => (
+              <button
+                key={opt.id}
+                type="button"
+                disabled={isPrivate}
+                onClick={() => onChange({ ...tab, residency: tab.residency === opt.id ? null : opt.id })}
+                className={`flex-1 px-3 py-2 text-sm transition-colors disabled:opacity-40 ${i ? "border-l border-line" : ""} ${
+                  tab.residency === opt.id ? "bg-ink text-paper" : "text-ink/65 hover:bg-paper-dim"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5">
-              Family income
-            </label>
-            <select
-              value={tab.incomeBracket ?? ""}
-              onChange={(e) => onChange({ ...tab, incomeBracket: e.target.value || null })}
-              className="w-full rounded-xl border border-line bg-paper py-2.5 px-3.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-moss/40 focus:border-moss"
-            >
-              <option value="">Not specified</option>
-              {INCOME_BRACKETS.map((b) => (
-                <option key={b} value={b}>
-                  {INCOME_BRACKET_LABELS[b]}
-                </option>
-              ))}
-            </select>
-          </div>
+          {isPrivate && <p className="text-xs text-ink/45 mt-1">Private school. Everyone pays the same.</p>}
+        </div>
+        <div>
+          <label className={label}>Family income</label>
+          <select
+            value={tab.incomeBracket ?? ""}
+            onChange={(e) => onChange({ ...tab, incomeBracket: e.target.value || null })}
+            className="w-full rounded-md border border-line bg-paper py-2 px-3 text-sm text-ink focus:outline-none focus:border-moss"
+          >
+            <option value="">Skip (use sticker or average price)</option>
+            {INCOME_BRACKETS.map((b) => (
+              <option key={b} value={b}>
+                {INCOME_BRACKET_LABELS[b]}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 border-t border-line pt-6">
-        <Stat label="Estimated salary" value={result.salary} big />
-        <Stat label="Annual cost" value={result.annualCost} />
-        <Stat label="4-year cost" value={result.fourYearCost} />
+      <div className="border-t border-line px-5 sm:px-6 py-5 bg-paper-dim/40">
+        <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
+          <div className="min-w-[12rem]">
+            <div className="font-display tabular text-4xl sm:text-5xl leading-none">
+              {result.salary == null ? <span className="text-ink/30">n/a</span> : formatMoney(result.salary)}
+            </div>
+            <div className="text-[13px] text-ink/60 mt-2">Median salary, 4 years after graduation</div>
+          </div>
+          <div>
+            <div className="font-display tabular text-2xl leading-none">{formatMoney(result.annualCost) ?? "n/a"}</div>
+            <div className="text-[13px] text-ink/60 mt-2">Per year</div>
+          </div>
+          <div>
+            <div className="font-display tabular text-2xl leading-none">{formatMoney(result.fourYearCost) ?? "n/a"}</div>
+            <div className="text-[13px] text-ink/60 mt-2">Four years at that price</div>
+          </div>
+        </div>
+
+        <div className="mt-4 space-y-1 text-xs text-ink/50 leading-relaxed">
+          {school && tab.major && result.salary == null && (
+            <p>No 4-year salary is published for this program. The Dept. of Education withholds it when too few graduates are in the data.</p>
+          )}
+          {basis && <p>Cost used: {basis.charAt(0).toLowerCase() + basis.slice(1)}, {school.tuition.priceYear} (recent years projected from IPEDS trends).</p>}
+          {school && !school.tuition && <p>We don't have cost data for this school.</p>}
+        </div>
       </div>
-      {school?.tuition && (
-        <p className="text-xs text-ink/40 mt-4">
-          Cost figures for {school.tuition.priceYear}. Recent years are projected from IPEDS
-          historical growth rates, not directly reported.
-        </p>
-      )}
-      {!school?.tuition && school && (
-        <p className="text-xs text-ink/40 mt-4">No cost data available for this school.</p>
-      )}
     </div>
   );
 }
 
 function ComparisonTable({ tabs, schoolsById }) {
   const rows = tabs.map((tab) => ({ tab, ...computeTabResult(tab, schoolsById) }));
+  const cell = (v) => formatMoney(v) ?? <span className="text-ink/30">n/a</span>;
 
   return (
-    <div className="rounded-3xl border border-line bg-paper overflow-x-auto">
+    <div className="border border-line bg-paper rounded-md overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink/50">
-            <th className="px-5 py-3 font-semibold">College</th>
-            <th className="px-5 py-3 font-semibold">Major</th>
-            <th className="px-5 py-3 font-semibold text-right">Salary</th>
-            <th className="px-5 py-3 font-semibold text-right">Annual cost</th>
-            <th className="px-5 py-3 font-semibold text-right">4-year cost</th>
-            <th className="px-5 py-3 font-semibold text-right">Est. ROI</th>
+          <tr className="border-b border-line text-left text-[13px] text-ink/60">
+            <th className="px-4 py-2.5 font-medium">College</th>
+            <th className="px-4 py-2.5 font-medium">Major</th>
+            <th className="px-4 py-2.5 font-medium text-right">Salary, yr 4</th>
+            <th className="px-4 py-2.5 font-medium text-right">Per year</th>
+            <th className="px-4 py-2.5 font-medium text-right">4 years</th>
+            <th className="px-4 py-2.5 font-medium text-right">Salary minus yearly cost</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(({ tab, school, salary, annualCost, fourYearCost, roi }) => (
             <tr key={tab.id} className="border-b border-line last:border-0">
-              <td className="px-5 py-3 font-medium text-ink truncate max-w-[10rem]">
-                {school?.name ?? "—"}
-              </td>
-              <td className="px-5 py-3 text-ink/70 truncate max-w-[10rem]">{tab.major ?? "—"}</td>
-              <td className="px-5 py-3 text-right tabular">{formatMoney(salary)}</td>
-              <td className="px-5 py-3 text-right tabular">{formatMoney(annualCost)}</td>
-              <td className="px-5 py-3 text-right tabular">{formatMoney(fourYearCost)}</td>
-              <td className="px-5 py-3 text-right tabular font-semibold text-moss">{formatMoney(roi)}</td>
+              <td className="px-4 py-2.5 font-medium text-ink truncate max-w-[11rem]">{school?.name ?? "n/a"}</td>
+              <td className="px-4 py-2.5 text-ink/70 truncate max-w-[10rem]">{tab.major ?? "n/a"}</td>
+              <td className="px-4 py-2.5 text-right tabular">{cell(salary)}</td>
+              <td className="px-4 py-2.5 text-right tabular">{cell(annualCost)}</td>
+              <td className="px-4 py-2.5 text-right tabular">{cell(fourYearCost)}</td>
+              <td className="px-4 py-2.5 text-right tabular font-semibold text-moss">{cell(roi)}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      <p className="px-4 py-2 border-t border-line text-xs text-ink/45">
+        Last column: the year-4 salary minus a quarter of the 4-year cost. A rough payoff check, not a forecast. <a href="/methodology.html" className="underline">How it's calculated</a>.
+      </p>
     </div>
   );
 }
@@ -190,6 +194,7 @@ export default function Calculator() {
   const [activeId, setActiveId] = useState(tabs[0].id);
 
   const activeTab = tabs.find((t) => t.id === activeId) ?? tabs[0];
+  const complete = tabs.filter((t) => t.schoolId != null && t.major);
 
   function updateTab(updated) {
     setTabs((ts) => ts.map((t) => (t.id === updated.id ? updated : t)));
@@ -216,63 +221,72 @@ export default function Calculator() {
   }
 
   return (
-    <section id="explore" className="px-6 py-24 bg-paper-dim/50">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-ink">
-            Run the numbers
-          </h2>
-          <p className="mt-3 text-ink/60 max-w-lg">
-            Pick a college and major to see the payoff. Add more to compare side by side.
+    <section className="px-5 sm:px-6 pt-10 pb-20">
+      <div className="max-w-5xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_15rem] gap-x-12 gap-y-8">
+        <div>
+          <h1 className="font-display text-3xl sm:text-[2.35rem] leading-tight tracking-tight">What a degree costs, and what it pays</h1>
+          <p className="mt-2 text-ink/60 max-w-xl">
+            Pick a school and a major. Compare up to five.
           </p>
-        </div>
 
-        <div className="flex items-center gap-1.5 mb-5 flex-wrap">
-          {tabs.map((tab) => (
-            <div
-              key={tab.id}
-              className={`group flex items-center gap-2 pl-4 pr-2.5 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
-                activeId === tab.id ? "bg-ink text-paper" : "bg-paper border border-line text-ink/60 hover:text-ink"
-              }`}
-              onClick={() => setActiveId(tab.id)}
-            >
-              <TabLabel tab={tab} schoolsById={schoolsById} />
+          <div className="mt-7 flex items-end gap-0.5 border-b border-line overflow-x-auto">
+            {tabs.map((tab) => (
+              <div
+                key={tab.id}
+                onClick={() => setActiveId(tab.id)}
+                className={`flex items-center gap-1.5 pl-3 pr-1.5 py-2 -mb-px text-sm cursor-pointer whitespace-nowrap border rounded-t-md ${
+                  activeId === tab.id ? "bg-paper border-line border-b-paper text-ink font-medium" : "border-transparent text-ink/55 hover:text-ink"
+                }`}
+              >
+                <TabLabel tab={tab} schoolsById={schoolsById} />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeTab(tab.id);
+                  }}
+                  aria-label="Clear this pick"
+                  className="rounded p-0.5 text-ink/40 hover:text-ink hover:bg-paper-dim"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ))}
+            {tabs.length < 5 && (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTab(tab.id);
-                }}
-                aria-label="Clear this pick"
-                className={`rounded-full p-0.5 ${activeId === tab.id ? "hover:bg-paper/20" : "hover:bg-paper-dim"}`}
+                onClick={addTab}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-ink/55 hover:text-ink whitespace-nowrap"
               >
-                <X size={13} />
+                <Plus size={14} /> Compare another
               </button>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <CalculatorForm tab={activeTab} onChange={updateTab} schools={schools} schoolsById={schoolsById} />
+          </div>
+
+          {complete.length >= 2 && (
+            <div className="mt-8">
+              <h2 className="text-sm font-semibold mb-2">Side by side</h2>
+              <ComparisonTable tabs={complete} schoolsById={schoolsById} />
             </div>
-          ))}
-          {tabs.length < 5 && (
-            <button
-              type="button"
-              onClick={addTab}
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-line text-ink/50 hover:text-ink hover:border-moss transition-colors"
-              aria-label="Add another college"
-            >
-              <Plus size={16} />
-            </button>
           )}
         </div>
 
-        <CalculatorForm tab={activeTab} onChange={updateTab} schools={schools} schoolsById={schoolsById} />
-
-        {tabs.filter((t) => t.schoolId != null && t.major).length >= 2 && (
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-ink/60 mb-3">Comparison</h3>
-            <ComparisonTable
-              tabs={tabs.filter((t) => t.schoolId != null && t.major)}
-              schoolsById={schoolsById}
-            />
-          </div>
-        )}
+        <aside className="text-sm text-ink/65 leading-relaxed lg:pt-16 space-y-3 lg:border-l lg:border-line lg:pl-6">
+          <p className="font-medium text-ink">About the numbers</p>
+          <p>
+            Salaries come from federal tax records, via the Dept. of Education's College Scorecard. They're medians for
+            graduates who got federal aid and were working, not in school, four years after finishing.
+          </p>
+          <p>Costs use net price when you give an income. That's what families actually paid after grants, which is often far below sticker.</p>
+          <p>Small programs sometimes have no salary. That's the government withholding it for privacy, not a gap we can fill.</p>
+          <p>
+            <a href="/methodology.html" className="text-moss underline underline-offset-2">Full methodology and sources</a>
+          </p>
+        </aside>
       </div>
     </section>
   );

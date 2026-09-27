@@ -4,14 +4,7 @@ import Calculator from "./components/Calculator";
 import Footer from "./components/Footer";
 
 function LoadingScreen() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-paper">
-      <div className="flex flex-col items-center gap-4">
-        <span className="w-3 h-3 rounded-full bg-moss animate-pulse" />
-        <p className="text-sm text-ink/50">Loading salary data…</p>
-      </div>
-    </div>
-  );
+  return <p className="px-6 py-24 text-sm text-ink/50 max-w-5xl mx-auto">Loading salary and price data…</p>;
 }
 
 function ErrorScreen() {
